@@ -1,0 +1,91 @@
+.search_container {
+    width: 550px;
+    background-color: var(--secondary-background-color);
+    padding-block: calc(var(--ui-step) * 2);
+    border: 3px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 16px;
+    color: var(--text-color);
+    position: relative;
+}
+
+.Seacrh {
+    background: none;
+    border: none;
+    flex: 1;
+    outline: none;
+    font-size: 16px;
+    color: var(--text-color);
+
+    &:focus {
+        border: none;
+    }
+
+    &::placeholder {
+        color: var(--secondary-text-color);
+    }
+}
+
+.search_icon {
+    padding-inline: var(--ui-step);
+    fill: var(--secondary-text-color);
+    height: 32px;
+    width: 32px;
+}
+
+.options {
+    width: 100%;
+    background-color: var(--secondary-background-color);
+    border-radius: var(--border-radius);
+
+    left: 0;
+    top: calc(var(--ui-step) * 14);
+}
+
+.input_container {
+    width: 100%;
+    padding-inline: calc(var(--ui-step) * 5);
+    display: flex;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    padding-block: calc(var(--ui-step) * 2);
+    padding-inline: calc(var(--ui-step) * 5);
+
+    span {
+        flex: 1;
+    }
+}
+
+.option_activated {
+    background-color: var(--surface-color);
+}
+
+.option_icon {
+    padding-right: calc(var(--ui-step) * 2);
+    fill: var(--secondary-text-color);
+    height: 20px;
+    width: 36px;
+}
+
+.close_button {
+    height: 24px;
+    margin: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--border-radius);
+
+    &:hover {
+        background-color: var(--primary-color);
+    }
+
+    svg {
+        fill: var(--secondary-text-color);
+        height: 24px;
+        width: 24px;
+    }
+}
