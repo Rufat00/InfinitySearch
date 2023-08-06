@@ -1,6 +1,7 @@
 import Seacrh from "@/components/Search/Search";
 import styles from "./page.module.scss";
 import Logo from "@/components/Logo/Logo";
+import Loader from "@/components/Loader/Loader";
 
 export default function Home() {
     return (

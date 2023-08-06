@@ -1,4 +1,3 @@
-const puppeteer = require("puppeteer");
 const generateShingles = require("./helper/generateShingles");
 
 const fetch = async (page) => {
@@ -20,6 +19,18 @@ const fetch = async (page) => {
             }, name);
         };
 
+        const langAttribute = await page.evaluate(() => {
+            const htmlTag = document.querySelector("html");
+            return htmlTag.getAttribute("lang");
+        });
+
+        if (process.env.ALLOW_LANG !== langAttribute) {
+            return {
+                body: null,
+                links: [],
+            };
+        }
+
         const title = await page.evaluate(() => document.title);
         const favicon = await page.evaluate(() => {
             const metatag =
@@ -36,7 +47,7 @@ const fetch = async (page) => {
         const description = await getMetadata("description");
         const image = await getMetadata("image");
 
-        const links = await page.$$eval("a", (ael) =>
+        let links = await page.$$eval("a", (ael) =>
             ael
                 .filter((a) => {
                     if (a.href && a.href !== "") {
@@ -73,6 +84,13 @@ const fetch = async (page) => {
                 .map((a) => a.href)
         );
 
+        if (process.env.GOOGLE_NOT_INCLUDE) {
+            const googleDomainPattern =
+                /^(https?:\/\/)?([\da-z.-]+\.)*google\.[a-z.]{2,6}(\/[\w.-]*)*\/?$/;
+
+            links = links.filter((link) => !googleDomainPattern.test(link));
+        }
+
         const content = {
             heading1: [], //h1
             heading2: [], //h2, h3
@@ -103,8 +121,6 @@ const fetch = async (page) => {
             [...content.heading1, ...content.heading2, ...content.heading3].join(" "),
             4
         );
-
-        console.log(suggestions);
 
         return {
             body: {

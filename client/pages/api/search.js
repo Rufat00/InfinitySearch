@@ -42,16 +42,15 @@ export default async function handler(request, response) {
                         field: "url",
                     },
                     suggest: {
-                        text: request.query.q,
                         complete: {
-                            text: request.query.q,
+                            prefix: request.query.q,
                             completion: {
                                 field: "suggest",
-                                size: 8,
+                                size: 1,
                                 skip_duplicates: true,
-                                // fuzzy: {
-                                //     fuzziness: "auto",
-                                // },
+                                fuzzy: {
+                                    fuzziness: "AUTO",
+                                },
                             },
                         },
                     },

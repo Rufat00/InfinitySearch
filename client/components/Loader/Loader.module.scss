@@ -1,0 +1,27 @@
+$len: 242.776657104492px;
+$time: 1.6s;
+
+.outline {
+    stroke-dasharray: $len * 0.01, $len;
+    stroke-dashoffset: 0;
+    stroke: var(--primary-color);
+    animation: anim $time linear infinite;
+}
+.outline_bg {
+    stroke: var(--primary-color);
+}
+
+@keyframes anim {
+    12.5% {
+        stroke-dasharray: $len * 0.14, $len;
+        stroke-dashoffset: -$len * 0.11;
+    }
+    43.75% {
+        stroke-dasharray: $len * 0.35, $len;
+        stroke-dashoffset: -$len * 0.35;
+    }
+    100% {
+        stroke-dasharray: $len * 0.01, $len;
+        stroke-dashoffset: -$len * 0.99;
+    }
+}

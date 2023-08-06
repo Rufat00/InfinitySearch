@@ -10,6 +10,8 @@ import debounce from "@/helpers/debounce";
 import SearchResultType from "@/enums/SearchResultType";
 import HistoryIcon from "@/assets/icons/HistoryIcon";
 import CloseIcon from "@/assets/icons/CloseIcon";
+import preprocessResult from "@/helpers/preprocessResult";
+import isURL from "@/helpers/isUrl";
 
 const ResultIcon = ({ type, className }) => {
     if (type === SearchResultType.HISTORY) {
@@ -35,18 +37,20 @@ const Seacrh = ({ className }) => {
         options = options.map((option) => option.text.split("\n")[0]);
 
         setResults([
-            { value: value, type: SearchResultType.COMPLETE },
             ...histoty
                 .filter((item) => item.toLowerCase().includes(value.toLowerCase()))
                 .slice(-9 + options.length + 1)
                 .map((histoty) => ({ type: SearchResultType.HISTORY, value: histoty })),
-            ...options.map((option) => ({ type: SearchResultType.COMPLETE, value: option })),
+            ...options.map((option) => ({
+                type: SearchResultType.COMPLETE,
+                value: preprocessResult(option),
+            })),
         ]);
     };
 
     const handleOnChange = (event) => {
         setValue(event.target.value);
-        debounce(() => search(event.target.value), 300)();
+        debounce(() => search(event.target.value), 100)();
     };
 
     const deleteHistoty = (event, value) => {
@@ -60,10 +64,20 @@ const Seacrh = ({ className }) => {
         url.searchParams.set("q", value);
 
         let values = histoty.filter((item) => item === value);
-        if (values.length === 0 || values[0] !== "") {
+
+        if (values.length === 0 && value !== "") {
             addHistory(value);
         }
-        window.location.assign(url);
+
+        if (value !== "") {
+            if (isURL(value)) {
+                return window.location.assign(value);
+            }
+
+            return window.location.assign(url);
+        }
+
+        return handleOnSearchInputFocus();
     };
 
     const handleOnSearchInputFocus = () => buttonRef.current.click();
@@ -85,7 +99,13 @@ const Seacrh = ({ className }) => {
                 <Combobox.Button style={{ display: "none" }} ref={buttonRef} />
                 <div className={styles.options_container}>
                     <Combobox.Options className={styles.options}>
-                        {results.map((result, index) => (
+                        {[
+                            {
+                                value: value,
+                                type: SearchResultType.COMPLETE,
+                            },
+                            ...results,
+                        ].map((result, index) => (
                             <Combobox.Option key={index} value={result.value} as={"div"}>
                                 {({ active }) => (
                                     <li
@@ -97,7 +117,7 @@ const Seacrh = ({ className }) => {
                                             type={result.type}
                                             className={styles.option_icon}
                                         />
-                                        <span>{result.value}</span>
+                                        <span>{result.value === "" ? "..." : result.value}</span>
                                         {result.type === SearchResultType.HISTORY && (
                                             <Combobox.Button
                                                 className={styles.close_button}

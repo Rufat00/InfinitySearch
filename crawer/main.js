@@ -30,6 +30,13 @@ const start = async () => {
             });
 
         const browser = await puppeteer.launch({ headless: "new" });
+        let limitCounter = 0;
+
+        let LIMIT = process.env.LIMIT;
+
+        if (LIMIT !== "*") {
+            LIMIT = parseInt(LIMIT);
+        }
 
         while (true) {
             try {
@@ -42,12 +49,26 @@ const start = async () => {
                 const { links, body } = await fetch(page);
 
                 await page.close();
-                await indexPage(body);
+                if (body) {
+                    await indexPage(body);
+                    limitCounter += 1;
+                }
 
                 linksDataset.pop();
                 await writeDataset("links", [...links, ...linksDataset]);
 
-                console.log(`"${currentLink}" have been processed`);
+                if (body) {
+                    console.log(`"${currentLink}" have been processed`);
+                } else {
+                    console.log(
+                        `"${currentLink}" have not been processed as it is not suits the rules`
+                    );
+                }
+
+                if (limitCounter === LIMIT) {
+                    console.log(`${limitCounter} pages have been proccessed. exiting...`);
+                    process.exit();
+                }
             } catch (error) {
                 console.log(error);
             }
