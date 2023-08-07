@@ -7,7 +7,10 @@ export default async function handler(request, response) {
                 index: process.env.MAIN_INDEX,
                 _source: ["url", "origin", "title", "favicon", "description", "image"],
                 body: {
-                    from: request.query.page || 0,
+                    collapse: {
+                        field: "url",
+                    },
+                    from: (request.query.page - 1) * 10 || 0,
                     size: 10,
                     query: {
                         bool: {
@@ -16,8 +19,8 @@ export default async function handler(request, response) {
                                     multi_match: {
                                         query: request.query.q,
                                         fields: [
+                                            "origin",
                                             "title",
-                                            "content",
                                             "heading1",
                                             "heading2",
                                             "heading3",
@@ -37,9 +40,6 @@ export default async function handler(request, response) {
                                 },
                             ],
                         },
-                    },
-                    collapse: {
-                        field: "url",
                     },
                     suggest: {
                         complete: {

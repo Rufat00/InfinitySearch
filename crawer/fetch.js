@@ -84,7 +84,7 @@ const fetch = async (page) => {
                 .map((a) => a.href)
         );
 
-        if (process.env.GOOGLE_NOT_INCLUDE) {
+        if (process.env.GOOGLE_NOT_INCLUDE === "true") {
             const googleDomainPattern =
                 /^(https?:\/\/)?([\da-z.-]+\.)*google\.[a-z.]{2,6}(\/[\w.-]*)*\/?$/;
 

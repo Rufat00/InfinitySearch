@@ -130,3 +130,8 @@
         }
     }
 }
+
+.pagination {
+    margin-top: calc(var(--ui-step) * 4);
+    margin-bottom: calc(var(--ui-step) * 8);
+}

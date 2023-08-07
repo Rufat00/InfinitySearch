@@ -59,9 +59,12 @@ const Seacrh = ({ className }) => {
         setResults(results.filter((result) => result.value !== value));
     };
 
-    const handleOnSubmit = (value) => {
+    const handleOnSubmit = (value, page = null) => {
         const url = new URL(window.location.href + "search");
         url.searchParams.set("q", value);
+        if (page) {
+            url.searchParams.set("page", page);
+        }
 
         let values = histoty.filter((item) => item === value);
 

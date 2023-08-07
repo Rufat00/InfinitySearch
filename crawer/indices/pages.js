@@ -27,8 +27,8 @@ const pagesIndex = Object.freeze({
         properties: {
             suggest: {
                 type: "completion",
-                analyzer: "custom_analyzer",
-                search_analyzer: "standard",
+                // analyzer: "custom_analyzer",
+                // search_analyzer: "standard",
             },
             origin: {
                 type: "keyword",

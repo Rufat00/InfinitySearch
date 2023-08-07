@@ -1,1 +1,1 @@
-pagination, filter results 
+filter results 

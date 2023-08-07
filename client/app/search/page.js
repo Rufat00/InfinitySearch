@@ -8,17 +8,21 @@ import { useEffect, useState } from "react";
 import noFaveicon from "@/assets/images/no_faveicon.png";
 import Image from "next/image";
 import preprocessResult from "@/helpers/preprocessResult";
+import areTextsDifferent from "@/helpers/areTextsDifferent";
+import Pagination from "@/components/Pagination/Pagination";
 
 const SearchPage = () => {
     const [data, setData] = useState([]);
     const [suggest, setSuggest] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [totalCount, setTotalCount] = useState(0);
+
+    const urlParams = new URLSearchParams(window.location.search);
 
     useEffect(() => {
         setLoading(true);
 
         const url = new URL(window.location.origin + "/api/search");
-        const urlParams = new URLSearchParams(window.location.search);
 
         url.searchParams.set("q", urlParams.get("q"));
         if (urlParams.has("page")) {
@@ -29,6 +33,7 @@ const SearchPage = () => {
             .get(url)
             .then(({ data }) => {
                 setData(data.hits.hits);
+                setTotalCount(data.hits.total.value);
                 const suggestOptions = data.suggest.complete[0].options;
 
                 if (suggestOptions.length !== 0) {
@@ -36,7 +41,8 @@ const SearchPage = () => {
 
                     if (
                         preprocessResult(suggestOptions[0].text) !==
-                        preprocessResult(urlParams.get("q"))
+                            preprocessResult(urlParams.get("q")) &&
+                        !areTextsDifferent(urlParams.get("q"), suggestOptions[0].text, 3)
                     ) {
                         const suggestUrl = new URL(window.location.origin + "/search");
                         suggestUrl.searchParams.set("q", suggestOptions[0].text);
@@ -47,6 +53,13 @@ const SearchPage = () => {
             })
             .finally(() => setLoading(false));
     }, []);
+
+    const handleOnPageChanged = (page) => {
+        const url = new URL(window.location.href);
+        url.searchParams.set("page", page);
+
+        window.location.assign(url);
+    };
 
     return (
         <main>
@@ -72,48 +85,58 @@ const SearchPage = () => {
                     ))}
 
                 {data.length !== 0 && !loading ? (
-                    data.map(({ _source }) => (
-                        <div className={styles.page} key={_source.url}>
-                            <div className={styles.body}>
-                                <a href={_source.url}>
-                                    <div className={styles.head}>
-                                        {_source.favicon ? (
-                                            <img
-                                                xSrc={_source.favicon}
-                                                alt="favicon"
-                                                src={_source.favicon}
-                                                className={styles.favicon}
-                                            />
-                                        ) : (
-                                            <Image
-                                                alt="favicon"
-                                                src={noFaveicon}
-                                                className={styles.favicon}
-                                            />
-                                        )}
-                                        <div className={styles.links}>
-                                            <p className={styles.origin}>
-                                                {_source.origin && _source.origin}
-                                            </p>
-                                            <p className={styles.url}>
-                                                {_source.url && _source.url}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </a>
-
-                                <div className={styles.info}>
+                    <>
+                        {data.map(({ _source }) => (
+                            <div className={styles.page} key={_source.url}>
+                                <div className={styles.body}>
                                     <a href={_source.url}>
-                                        <p className={styles.title}>{_source.title}</p>
+                                        <div className={styles.head}>
+                                            {_source.favicon ? (
+                                                <img
+                                                    xSrc={_source.favicon}
+                                                    alt="favicon"
+                                                    src={_source.favicon}
+                                                    className={styles.favicon}
+                                                />
+                                            ) : (
+                                                <Image
+                                                    alt="favicon"
+                                                    src={noFaveicon}
+                                                    className={styles.favicon}
+                                                />
+                                            )}
+                                            <div className={styles.links}>
+                                                <p className={styles.origin}>
+                                                    {_source.origin && _source.origin}
+                                                </p>
+                                                <p className={styles.url}>
+                                                    {_source.url && _source.url}
+                                                </p>
+                                            </div>
+                                        </div>
                                     </a>
-                                    <p className={styles.description}>{_source.description}</p>
+
+                                    <div className={styles.info}>
+                                        <a href={_source.url}>
+                                            <p className={styles.title}>{_source.title}</p>
+                                        </a>
+                                        <p className={styles.description}>{_source.description}</p>
+                                    </div>
                                 </div>
+                                {_source.image && (
+                                    <img alt="image" src={_source.image} className={styles.image} />
+                                )}
                             </div>
-                            {_source.image && (
-                                <img alt="image" src={_source.image} className={styles.image} />
-                            )}
-                        </div>
-                    ))
+                        ))}
+                        <Pagination
+                            onPageChange={handleOnPageChanged}
+                            totalCount={totalCount}
+                            siblingCount={2}
+                            currentPage={parseInt(urlParams.get("page")) || 0}
+                            pageSize={10}
+                            className={styles.pagination}
+                        />
+                    </>
                 ) : (
                     <div className={styles.nothing_found}>
                         Nothing Found. <a href="/">Homepage</a>
