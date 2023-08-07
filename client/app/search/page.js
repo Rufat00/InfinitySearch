@@ -8,8 +8,8 @@ import { useEffect, useState } from "react";
 import noFaveicon from "@/assets/images/no_faveicon.png";
 import Image from "next/image";
 import preprocessResult from "@/helpers/preprocessResult";
-import areTextsDifferent from "@/helpers/areTextsDifferent";
 import Pagination from "@/components/Pagination/Pagination";
+import areTextsSimilar from "@/helpers/areTextsSimilar";
 
 const SearchPage = () => {
     const [data, setData] = useState([]);
@@ -42,12 +42,19 @@ const SearchPage = () => {
                     if (
                         preprocessResult(suggestOptions[0].text) !==
                             preprocessResult(urlParams.get("q")) &&
-                        !areTextsDifferent(urlParams.get("q"), suggestOptions[0].text, 3)
+                        areTextsSimilar(
+                            preprocessResult(urlParams.get("q")),
+                            preprocessResult(suggestOptions[0].text),
+                            3
+                        )
                     ) {
                         const suggestUrl = new URL(window.location.origin + "/search");
-                        suggestUrl.searchParams.set("q", suggestOptions[0].text);
+                        suggestUrl.searchParams.set("q", preprocessResult(suggestOptions[0].text));
 
-                        setSuggest({ text: suggestOptions[0].text, url: suggestUrl });
+                        setSuggest({
+                            text: preprocessResult(suggestOptions[0].text),
+                            url: suggestUrl,
+                        });
                     }
                 }
             })
