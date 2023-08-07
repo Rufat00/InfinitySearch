@@ -137,6 +137,11 @@ const fetch = async (page) => {
         };
     } catch (error) {
         console.log(error);
+
+        return {
+            body: null,
+            links: [],
+        };
     }
 };
 

@@ -39,7 +39,7 @@ const start = async () => {
             LIMIT = parseInt(LIMIT);
         }
 
-        process.on("beforeExit", () => {
+        process.on("exit", () => {
             console.log(
                 `Exiting ${limitCounter} pages have been processed.\n More ${
                     LIMIT - limitCounter
