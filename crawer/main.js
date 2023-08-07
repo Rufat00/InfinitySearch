@@ -39,6 +39,14 @@ const start = async () => {
             LIMIT = parseInt(LIMIT);
         }
 
+        process.on("beforeExit", () => {
+            console.log(
+                `Exiting ${limitCounter} pages have been processed.\n More ${
+                    LIMIT - limitCounter
+                } pages must be processed `
+            );
+        });
+
         while (true) {
             try {
                 const linksDataset = await readDataset("links");
@@ -82,8 +90,6 @@ const start = async () => {
                 console.log(error);
             }
         }
-
-        await browser.close();
     } catch (error) {
         console.log(error);
     }
