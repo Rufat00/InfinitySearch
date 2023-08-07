@@ -31,6 +31,7 @@ const start = async () => {
 
         const browser = await puppeteer.launch({ headless: "new" });
         let limitCounter = 0;
+        let allowExpandDataset = true;
 
         let LIMIT = process.env.LIMIT;
 
@@ -54,8 +55,16 @@ const start = async () => {
                     limitCounter += 1;
                 }
 
+                if (linksDataset.length >= LIMIT) {
+                    allowExpandDataset = false;
+                }
+
                 linksDataset.pop();
-                await writeDataset("links", [...links, ...linksDataset]);
+                if (allowExpandDataset) {
+                    await writeDataset("links", [...links, ...linksDataset]);
+                } else {
+                    await writeDataset("links", linksDataset);
+                }
 
                 if (body) {
                     console.log(`"${currentLink}" have been processed`);
