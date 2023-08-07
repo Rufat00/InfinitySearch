@@ -41,11 +41,16 @@ const Pagination = ({
             </li>
             {paginationRange.map((pageNumber) => {
                 if (pageNumber === "...") {
-                    return <li className={`${styles.pagination_item} ${styles.dots}`}>&#8230;</li>;
+                    return (
+                        <li key={pageNumber} className={`${styles.pagination_item} ${styles.dots}`}>
+                            &#8230;
+                        </li>
+                    );
                 }
 
                 return (
                     <li
+                        key={pageNumber}
                         className={`${styles.pagination_item} ${
                             currentPage === pageNumber ? styles.selected : ""
                         }`}
