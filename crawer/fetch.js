@@ -86,7 +86,7 @@ const fetch = async (page) => {
 
         if (process.env.GOOGLE_NOT_INCLUDE === "true") {
             const googleDomainPattern =
-                /^(https?:\/\/)?([\da-z.-]+\.)*google\.[a-z.]{2,6}(\/[\w.-]*)*\/?$/;
+                /^(https?:\/\/)?([\da-z.-]+\.)*google\.[a-z.]{2,6}(\/[\w.-]*)*\/?/;
 
             links = links.filter((link) => !googleDomainPattern.test(link));
         }
