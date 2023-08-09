@@ -1,10 +1,10 @@
 require("dotenv").config();
 const { readDataset, writeDataset } = require("./storage");
 const elasticClient = require("./elasticClient");
-const fetch = require("./fetch");
-const indexPage = require("./indexPage");
 const pagesIndex = require("./indices/pages");
-const puppeteer = require("puppeteer");
+const { Worker } = require("worker_threads");
+const os = require("os");
+const indexPage = require("./indexPage");
 
 const start = async () => {
     try {
@@ -28,8 +28,7 @@ const start = async () => {
                     console.log(`Creating ${process.env.MAIN_INDEX} index and writing in it`);
                 }
             });
-
-        const browser = await puppeteer.launch({ headless: "new" });
+        const THREAD_COUNT = os.cpus().length;
         let limitCounter = 0;
         let allowExpandDataset = true;
 
@@ -40,7 +39,35 @@ const start = async () => {
         }
         let linksDataset = await readDataset("links");
 
-        process.on("exit", async () => {
+        const createFetcher = () =>
+            new Promise((resolve, reject) => {
+                const url = linksDataset[0];
+                linksDataset.shift();
+
+                const fetcher = new Worker("./fetcher.js", {
+                    workerData: { url },
+                });
+
+                fetcher.on("message", async ({ links, body }) => {
+                    if (allowExpandDataset) {
+                        linksDataset = [...links, ...linksDataset];
+                    }
+
+                    await writeDataset("links", linksDataset);
+
+                    if (body) {
+                        limitCounter += 1;
+                        await indexPage(body);
+                    }
+                    resolve();
+                });
+
+                fetcher.on("error", (error) => {
+                    reject(error);
+                });
+            });
+
+        process.on("exit", () => {
             console.log(
                 `Exiting ${limitCounter} pages have been processed.\n More ${
                     LIMIT - limitCounter
@@ -50,39 +77,19 @@ const start = async () => {
 
         while (true) {
             try {
-                const currentLink = linksDataset[0];
-
-                const page = await browser.newPage();
-                await page.goto(currentLink);
-
-                const { links, body } = await fetch(page);
-
-                await page.close();
-                if (body) {
-                    await indexPage(body);
-                    limitCounter += 1;
-                }
-
                 if (linksDataset.length >= LIMIT) {
                     allowExpandDataset = false;
                 }
+                const workingFetchers = [];
 
-                linksDataset.shift();
-                if (allowExpandDataset) {
-                    linksDataset = [...links, ...linksDataset];
-                    await writeDataset("links", linksDataset);
+                for (let index = 0; index < THREAD_COUNT; index++) {
+                    workingFetchers.push(createFetcher());
                 }
+                await Promise.all(workingFetchers);
 
-                if (body) {
-                    console.log(`"${currentLink}" have been processed`);
-                } else {
-                    console.log(
-                        `"${currentLink}" have not been processed as it is not suits the rules`
-                    );
-                }
-
-                if (limitCounter === LIMIT) {
+                if (limitCounter >= LIMIT) {
                     console.log(`${limitCounter} pages have been proccessed. exiting...`);
+                    process.exit();
                 }
             } catch (error) {
                 console.log(error);

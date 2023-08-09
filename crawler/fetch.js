@@ -1,6 +1,7 @@
 const generateShingles = require("./helper/generateShingles");
 
 const fetch = async (page) => {
+
     try {
         const getMetadata = async (name) => {
             return await page.evaluate((name) => {
