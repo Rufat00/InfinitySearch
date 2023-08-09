@@ -53,7 +53,10 @@ const start = async () => {
                 const currentLink = linksDataset[0];
 
                 if (!currentLink) {
-                    process.exit();
+                    if (linksDataset.length <= 0) {
+                        console.log("Links are over\n");
+                        process.exit();
+                    }
                 }
 
                 const page = await browser.newPage();
@@ -86,7 +89,7 @@ const start = async () => {
                 }
 
                 if (limitCounter === LIMIT) {
-                    console.log(`${limitCounter} pages have been proccessed. exiting...`);
+                    console.log(`${limitCounter} pages have been proccessed. exiting... \n`);
                 }
             } catch (error) {
                 console.log(error);
