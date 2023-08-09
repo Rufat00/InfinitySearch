@@ -12,7 +12,9 @@ function generateShingles(text, n) {
         }
     }
 
-    return [...words, ...shingles];
+    const pattern = /[^a-zA-Z0-9 ]/;
+
+    return [...words, ...shingles].filter((text) => !pattern.test(inputString));
 }
 
 module.exports = generateShingles;

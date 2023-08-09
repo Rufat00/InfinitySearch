@@ -52,6 +52,10 @@ const start = async () => {
             try {
                 const currentLink = linksDataset[0];
 
+                if (!currentLink) {
+                    process.exit();
+                }
+
                 const page = await browser.newPage();
                 await page.goto(currentLink);
 
