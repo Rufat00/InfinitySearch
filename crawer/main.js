@@ -38,8 +38,9 @@ const start = async () => {
         if (LIMIT !== "*") {
             LIMIT = parseInt(LIMIT);
         }
+        let linksDataset = await readDataset("links");
 
-        process.on("exit", () => {
+        process.on("exit", async () => {
             console.log(
                 `Exiting ${limitCounter} pages have been processed.\n More ${
                     LIMIT - limitCounter
@@ -49,8 +50,7 @@ const start = async () => {
 
         while (true) {
             try {
-                const linksDataset = await readDataset("links");
-                const currentLink = linksDataset[linksDataset.length - 1];
+                const currentLink = linksDataset[0];
 
                 const page = await browser.newPage();
                 await page.goto(currentLink);
@@ -67,10 +67,9 @@ const start = async () => {
                     allowExpandDataset = false;
                 }
 
-                linksDataset.pop();
+                linksDataset.shift();
                 if (allowExpandDataset) {
-                    await writeDataset("links", [...links, ...linksDataset]);
-                } else {
+                    linksDataset = [...links, ...linksDataset];
                     await writeDataset("links", linksDataset);
                 }
 
@@ -84,7 +83,6 @@ const start = async () => {
 
                 if (limitCounter === LIMIT) {
                     console.log(`${limitCounter} pages have been proccessed. exiting...`);
-                    process.exit();
                 }
             } catch (error) {
                 console.log(error);
