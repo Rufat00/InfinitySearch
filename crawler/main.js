@@ -76,7 +76,7 @@ const start = async () => {
 
                 linksDataset.shift();
                 if (allowExpandDataset) {
-                    linksDataset = [...links, ...linksDataset];
+                    linksDataset = [...linksDataset, ...links];
                     await writeDataset("links", linksDataset);
                 }
 
