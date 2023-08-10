@@ -24,7 +24,7 @@ const fetch = async (page) => {
             return htmlTag.getAttribute("lang");
         });
 
-        if (process.env.ALLOW_LANG !== langAttribute) {
+        if (!process.env.ALLOW_LANG.includes(langAttribute)) {
             return {
                 body: null,
                 links: [],

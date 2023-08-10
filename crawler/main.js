@@ -79,7 +79,7 @@ const start = async () => {
 
                 if (allowExpandDataset) {
                     links.forEach((link) => dataQueue.add(link));
-                    await writeDataset("links", dataQueue.array);
+                    await writeDataset("links", dataQueue.array());
                 }
 
                 if (body) {
@@ -91,7 +91,7 @@ const start = async () => {
                 }
 
                 if (limitCounter === LIMIT) {
-                    await writeDataset("links", dataQueue.array).then(() => {
+                    await writeDataset("links", dataQueue.array()).then(() => {
                         console.log(`${limitCounter} pages have been proccessed. exiting... \n`);
                         process.exit();
                     });
