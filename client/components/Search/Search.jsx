@@ -23,7 +23,9 @@ const ResultIcon = ({ type, className }) => {
 };
 
 const Seacrh = ({ className }) => {
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(
+        typeof window !== "undefined" ? window.location.search : ""
+    );
     const [value, setValue] = useState(urlParams.has("q") ? urlParams.get("q") : "");
     const [histoty, addHistory, removeHistory] = useSearchHistory();
     const [results, setResults] = useState([

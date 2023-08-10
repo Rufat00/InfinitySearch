@@ -17,7 +17,9 @@ const SearchPage = () => {
     const [loading, setLoading] = useState(false);
     const [totalCount, setTotalCount] = useState(0);
 
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(
+        typeof window !== "undefined" ? window.location.search : ""
+    );
 
     useEffect(() => {
         setLoading(true);
