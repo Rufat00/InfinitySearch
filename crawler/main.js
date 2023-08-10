@@ -5,6 +5,7 @@ const fetch = require("./fetch");
 const indexPage = require("./indexPage");
 const pagesIndex = require("./indices/pages");
 const puppeteer = require("puppeteer");
+const SetQueue = require("./helper/SetQueue");
 
 const start = async () => {
     try {
@@ -32,6 +33,7 @@ const start = async () => {
         const browser = await puppeteer.launch({ headless: "new" });
         let limitCounter = 0;
         let allowExpandDataset = true;
+        const dataQueue = new SetQueue();
 
         let LIMIT = process.env.LIMIT;
 
@@ -39,6 +41,7 @@ const start = async () => {
             LIMIT = parseInt(LIMIT);
         }
         let linksDataset = await readDataset("links");
+        linksDataset.forEach((link) => dataQueue.add(link));
 
         process.on("exit", async () => {
             console.log(
@@ -50,7 +53,7 @@ const start = async () => {
 
         while (true) {
             try {
-                const currentLink = linksDataset[0];
+                const currentLink = dataQueue.next();
 
                 if (!currentLink) {
                     if (linksDataset.length <= 0) {
@@ -70,12 +73,13 @@ const start = async () => {
                     limitCounter += 1;
                 }
 
-                if (linksDataset.length >= LIMIT) {
+                if (dataQueue.size >= LIMIT) {
                     allowExpandDataset = false;
                 }
 
                 linksDataset.shift();
                 if (allowExpandDataset) {
+                    links.forEach((link) => dataQueue.add(link));
                     linksDataset = [...linksDataset, ...links];
                     await writeDataset("links", linksDataset);
                 }
