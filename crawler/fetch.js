@@ -81,7 +81,12 @@ const fetch = async (page) => {
                     }
                     return false;
                 })
-                .map((a) => a.href)
+                .map((a) => {
+                    const link = new URL(a.href);
+                    link.hash = "";
+
+                    return link.href;
+                })
         );
 
         if (process.env.GOOGLE_NOT_INCLUDE === "true") {
