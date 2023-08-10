@@ -66,8 +66,15 @@
 
 .description {
     color: var(--secondary-text-color);
+    display: block;
+    display: -webkit-box;
     font-size: 14px;
     max-width: 600px;
+    height: 50px;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .suggest {
