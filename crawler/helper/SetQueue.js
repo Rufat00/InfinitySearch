@@ -23,6 +23,9 @@ class SetQueue {
     get length() {
         return this.set.size;
     }
+    array() {
+        return Array.from(this.set);
+    }
 }
 
 module.exports = SetQueue;
