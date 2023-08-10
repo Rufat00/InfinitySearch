@@ -89,7 +89,10 @@ const start = async () => {
                 }
 
                 if (limitCounter === LIMIT) {
-                    console.log(`${limitCounter} pages have been proccessed. exiting... \n`);
+                    await writeDataset("links", linksDataset).then(() => {
+                        console.log(`${limitCounter} pages have been proccessed. exiting... \n`);
+                        process.exit();
+                    });
                 }
             } catch (error) {
                 console.log(error);
