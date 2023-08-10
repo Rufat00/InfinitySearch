@@ -2,7 +2,7 @@
 
 import styles from "./styles.module.scss";
 import Logo from "@/components/Logo/Logo";
-import Seacrh from "@/components/Search/Search";
+import Search from "@/components/Search/Search";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import noFaveicon from "@/assets/images/no_faveicon.png";
@@ -73,7 +73,7 @@ const SearchPage = () => {
     return (
         <main>
             <header className={styles.header}>
-                <Logo className={styles.logo} /> <Seacrh className={styles.search} />
+                <Logo className={styles.logo} /> <Search className={styles.search} />
             </header>
             <section className={styles.section}>
                 {suggest && (

@@ -12,6 +12,7 @@ import HistoryIcon from "@/assets/icons/HistoryIcon";
 import CloseIcon from "@/assets/icons/CloseIcon";
 import preprocessResult from "@/helpers/preprocessResult";
 import isURL from "@/helpers/isUrl";
+import dynamic from "next/dynamic";
 
 const ResultIcon = ({ type, className }) => {
     if (type === SearchResultType.HISTORY) {
@@ -22,7 +23,7 @@ const ResultIcon = ({ type, className }) => {
     }
 };
 
-const Seacrh = ({ className }) => {
+const SeacrhComponent = ({ className }) => {
     const urlParams = new URLSearchParams(
         typeof window !== "undefined" ? window.location.search : ""
     );
@@ -144,4 +145,8 @@ const Seacrh = ({ className }) => {
     );
 };
 
-export default Seacrh;
+const Search = dynamic(() => Promise.resolve(SeacrhComponent), {
+    ssr: false,
+});
+
+export default Search;

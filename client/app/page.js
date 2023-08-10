@@ -1,13 +1,12 @@
-import Seacrh from "@/components/Search/Search";
 import styles from "./page.module.scss";
 import Logo from "@/components/Logo/Logo";
-import Loader from "@/components/Loader/Loader";
+import Search from "@/components/Search/Search";
 
 export default function Home() {
     return (
         <main className={styles.main}>
             <Logo text className={styles.logo} />
-            <Seacrh />
+            <Search />
         </main>
     );
 }
