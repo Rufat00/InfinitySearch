@@ -14,7 +14,7 @@ function generateShingles(text, n) {
 
     const pattern = /[^a-zA-Z0-9 ]/;
 
-    return [...words, ...shingles].filter((text) => !pattern.test(inputString));
+    return [...words, ...shingles].filter((text) => !pattern.test(text));
 }
 
 module.exports = generateShingles;
